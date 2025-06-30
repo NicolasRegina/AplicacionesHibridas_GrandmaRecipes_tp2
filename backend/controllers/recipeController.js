@@ -139,26 +139,45 @@ export const deleteRecipe = async (req, res) => {
     }
 }
 
-// Buscar recetas por texto
+// Buscar recetas por texto y filtros
 export const searchRecipes = async (req, res) => {
     try {
-        const { q } = req.query
+        const { q, category, difficulty } = req.query;
 
-        if (!q) return res.status(400).json({ message: "Se requiere un término de búsqueda" })
-
-        // Filtro de privacidad: mostrar recetas públicas o las del usuario actual
+        // Filtro base de privacidad
         const filter = {
-            $text: { $search: q },
-            $or: [{ isPrivate: false }, { author: req.user.id }, { group: { $in: req.user.groups } }],
+            $or: [
+                { isPrivate: false }, 
+                { author: req.user.id }
+            ]
+        };
+
+        // búsqueda por texto si se proporciona
+        if (q) {
+            filter.$text = { $search: q };
+        }
+
+        // filtros adicionales
+        if (category) {
+            filter.category = category;
+        }
+
+        if (difficulty) {
+            filter.difficulty = difficulty;
+        }
+
+        // Si no hay filtros, devolver error
+        if (!q && !category && !difficulty) {
+            return res.status(400).json({ message: "Se requiere al menos un criterio de búsqueda" });
         }
 
         const recipes = await Recipe.find(filter)
-            .sort({ score: { $meta: "textScore" } })
+            .sort(q ? { score: { $meta: "textScore" } } : { createdAt: -1 })
             .populate("author", "name")
-            .populate("group", "name")
+            .populate("group", "name");
 
-        res.status(200).json(recipes)
+        res.status(200).json(recipes);
     } catch (err) {
-        res.status(500).json({ message: err.message })
+        res.status(500).json({ message: err.message });
     }
-}
+};

@@ -38,3 +38,16 @@ export const deleteRecipe = async (id, token) => {
     });
     return response.data;
 };
+
+export const searchRecipes = async (params, token) => {
+    const query = new URLSearchParams();
+    if (params.q) query.append("q", params.q);
+    if (params.category) query.append("category", params.category);
+    if (params.difficulty) query.append("difficulty", params.difficulty);
+    // TODO: Agregar más filtros a futuro
+
+    const response = await axios.get(`${API_URL}/recipes/search?${query.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+};
