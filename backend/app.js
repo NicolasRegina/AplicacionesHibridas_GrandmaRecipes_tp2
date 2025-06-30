@@ -5,10 +5,16 @@ import mongoose from "mongoose"
 import dotenv from "dotenv"
 import { recipeRouter, groupRouter, userRouter } from "./routes/index.js"
 import { authenticateJWT } from "./middleware/authMiddleware.js"
+import cors from "cors"
 
 dotenv.config()
 
 const app = express()
+
+app.use(cors({
+    origin: "http://localhost:5173", // solo permite requests desde tu frontend
+    credentials: true
+}));
 
 // Conexión a MongoDB
 mongoose

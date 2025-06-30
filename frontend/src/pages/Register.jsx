@@ -14,10 +14,11 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     try {
       await registerAPI(form);
-      setSuccess("Usuario registrado correctamente. ¡Inicia sesión!");
-      setTimeout(() => navigate("/login"), 2000);
+      setSuccess("Usuario registrado correctamente. Redirigiendo al login...");
+      setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       setError(err.response?.data?.message || "Error al registrarse");
     }

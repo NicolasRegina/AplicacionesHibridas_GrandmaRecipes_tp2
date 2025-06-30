@@ -17,7 +17,8 @@ const Login = () => {
     setError("");
     try {
       const data = await loginAPI(form);
-      login(data.user, data.token);
+      // Solo recibo { message, token }
+      await login(data.token); // login se encarga de pedir el profile
       navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Error al iniciar sesión");

@@ -25,10 +25,18 @@ export const AuthProvider = ({ children }) => {
     fetchProfile();
   }, [token]);
 
-  const login = (userData, token) => {
-    setUser(userData);
+  // Solo recibe el token
+  const login = async (token) => {
     setToken(token);
     localStorage.setItem("token", token);
+    try {
+      const profile = await getProfile(token);
+      setUser(profile);
+    } catch (error) {
+      setUser(null);
+      setToken("");
+      localStorage.removeItem("token");
+    }
   };
 
   const logout = () => {

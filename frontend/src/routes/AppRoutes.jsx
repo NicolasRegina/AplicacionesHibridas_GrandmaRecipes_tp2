@@ -8,7 +8,7 @@ import Groups from "../pages/Groups";
 import GroupForm from "../pages/GroupForm";
 import NotFound from "../pages/NotFound";
 import Navbar from "../components/Navbar";
-import ProtectedRoute from "../components/ProtectedRoute";
+import ProtectedRoute from "../context/ProtectedRoute";
 
 const AppRoutes = () => (
   <BrowserRouter>
