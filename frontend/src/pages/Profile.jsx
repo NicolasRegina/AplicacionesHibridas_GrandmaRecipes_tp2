@@ -38,91 +38,132 @@ const Profile = () => {
     setIsEditing(false);
   };
 
-  if (loading) return <div>Cargando...</div>;
-  if (!user) return <div>Debes iniciar sesión para ver tu perfil</div>;
-
-  return (
-    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
-      <h2>Mi Perfil</h2>
-      
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
-      
-      {profile && (
-        <div style={{ 
-          border: "1px solid #ddd", 
-          borderRadius: "8px", 
-          padding: "20px",
-          backgroundColor: "#f9f9f9"
-        }}>
-          {/* Imagen de perfil */}
-          <div style={{ textAlign: "center", marginBottom: "20px" }}>
-            <img 
-              src={profile.profilePicture || "/img/default-profile.png"} 
-              alt="Foto de perfil"
-              style={{
-                width: "120px",
-                height: "120px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                border: "3px solid #ddd"
-              }}
-            />
-          </div>
-
-          {/* Información del usuario */}
-          <div style={{ marginBottom: "15px" }}>
-            <strong>Nombre:</strong> {profile.name}
-          </div>
-          
-          <div style={{ marginBottom: "15px" }}>
-            <strong>Email:</strong> {profile.email}
-          </div>
-          
-          <div style={{ marginBottom: "15px" }}>
-            <strong>Biografía:</strong> 
-            <p style={{ marginTop: "5px", color: "#666" }}>
-              {profile.bio || "Sin biografía"}
-            </p>
-          </div>
-          
-          <div style={{ marginBottom: "15px" }}>
-            <strong>Miembro desde:</strong> {new Date(profile.createdAt).toLocaleDateString()}
-          </div>
-          
-          <div style={{ marginBottom: "20px" }}>
-            <strong>Grupos:</strong> {profile.groups?.length || 0} grupos
-          </div>
-
-          {/* Botón de editar */}
-          <div style={{ textAlign: "center" }}>
-            <button 
-              onClick={() => setIsEditing(true)}
-              style={{
-                backgroundColor: "#007bff",
-                color: "white",
-                border: "none",
-                padding: "10px 20px",
-                borderRadius: "5px",
-                cursor: "pointer",
-                fontSize: "16px"
-              }}
-            >
-              Editar Perfil
-            </button>
+  if (loading) {
+    return (
+      <div className="container py-4">
+        <div className="d-flex justify-content-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Cargando...</span>
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return (
+      <div className="container py-4">
+        <div className="alert alert-warning text-center" role="alert">
+          <h5>🔐 Acceso Requerido</h5>
+          <p className="mb-0">Debes iniciar sesión para ver tu perfil</p>
+        </div>
+      </div>
+    );
+  }
 
-      {/* Modal/Vista de edición */}
-      {isEditing && (
-        <EditProfileForm
-          profile={profile}
-          token={token}
-          onSuccess={handleEditSuccess}
-          onCancel={handleEditCancel}
-        />
-      )}
+  return (
+    <div className="container py-4">
+      <div className="row justify-content-center">
+        <div className="col-12 col-md-8 col-lg-6">
+          <h2 className="text-center mb-4">Mi Perfil</h2>
+          
+          {error && (
+            <div className="alert alert-danger" role="alert">
+              {error}
+            </div>
+          )}
+          
+          {success && (
+            <div className="alert alert-success" role="alert">
+              {success}
+            </div>
+          )}
+          
+          {profile && (
+            <div className="card shadow">
+              <div className="card-body p-4">
+                {/* Imagen de perfil */}
+                <div className="text-center mb-4">
+                  <img 
+                    src={profile.profilePicture || "/img/default-profile.png"} 
+                    alt="Foto de perfil"
+                    className="rounded-circle border border-3 border-light shadow"
+                    style={{
+                      width: "120px",
+                      height: "120px",
+                      objectFit: "cover"
+                    }}
+                  />
+                </div>
+
+                {/* Información del usuario */}
+                <div className="row g-3 mb-4">
+                  <div className="col-12">
+                    <div className="p-3 bg-light rounded">
+                      <strong className="text-muted small">NOMBRE</strong>
+                      <div className="fs-5 fw-semibold">{profile.name}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="col-12">
+                    <div className="p-3 bg-light rounded">
+                      <strong className="text-muted small">EMAIL</strong>
+                      <div className="fs-6">{profile.email}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="col-12">
+                    <div className="p-3 bg-light rounded">
+                      <strong className="text-muted small">BIOGRAFÍA</strong>
+                      <div className="fs-6 text-muted mt-1">
+                        {profile.bio || "Sin biografía"}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="col-6">
+                    <div className="p-3 bg-light rounded text-center">
+                      <strong className="text-muted small">MIEMBRO DESDE</strong>
+                      <div className="fs-6 fw-semibold">
+                        {new Date(profile.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="col-6">
+                    <div className="p-3 bg-light rounded text-center">
+                      <strong className="text-muted small">GRUPOS</strong>
+                      <div className="fs-6 fw-semibold">
+                        {profile.groups?.length || 0} grupos
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Botón de editar */}
+                <div className="text-center">
+                  <button 
+                    className="btn btn-primary btn-lg"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    ✏️ Editar Perfil
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Modal/Vista de edición */}
+          {isEditing && (
+            <EditProfileForm
+              profile={profile}
+              token={token}
+              onSuccess={handleEditSuccess}
+              onCancel={handleEditCancel}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 };

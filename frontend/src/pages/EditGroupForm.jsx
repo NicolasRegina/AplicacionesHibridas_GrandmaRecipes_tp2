@@ -77,49 +77,136 @@ const EditGroupForm = () => {
     }
   };
 
-  if (loading) return <p>Cargando datos del grupo...</p>;
+  if (loading) {
+    return (
+      <div className="container py-4">
+        <div className="row justify-content-center">
+          <div className="col-12 text-center">
+            <div className="spinner-border text-success" role="status">
+              <span className="visually-hidden">Cargando...</span>
+            </div>
+            <p className="mt-2 text-muted">Cargando datos del grupo...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h2>Editar Grupo</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
-      <form onSubmit={handleSubmit}>
-        <input
-          name="name"
-          placeholder="Nombre del grupo"
-          value={form.name}
-          onChange={handleChange}
-          required
-        />
-        <br />
-        <textarea
-          name="description"
-          placeholder="Descripción"
-          value={form.description}
-          onChange={handleChange}
-          required
-        />
-        <br />
-        <input
-          name="image"
-          placeholder="URL de imagen (opcional)"
-          value={form.image}
-          onChange={handleChange}
-        />
-        <br />
-        <label>
-          Privado
-          <input
-            type="checkbox"
-            name="isPrivate"
-            checked={form.isPrivate}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
-        <button type="submit">Actualizar Grupo</button>
-      </form>
+    <div className="container py-4">
+      <div className="row justify-content-center">
+        <div className="col-12 col-md-8 col-lg-6">
+          <div className="card shadow">
+            <div className="card-body p-4">
+              <h2 className="text-center mb-4 text-warning">
+                Editar Grupo
+              </h2>
+              
+              {error && (
+                <div className="alert alert-danger text-center" role="alert">
+                  ⚠️ {error}
+                </div>
+              )}
+              
+              {success && (
+                <div className="alert alert-success text-center" role="alert">
+                  ✅ {success}
+                </div>
+              )}
+              
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">
+                    Nombre del Grupo
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control form-control-lg"
+                    name="name"
+                    placeholder="Ingresa el nombre del grupo"
+                    value={form.name}
+                    onChange={handleChange}
+                    required
+                  />
+                  <div className="form-text">
+                    Entre 3 y 50 caracteres
+                  </div>
+                </div>
+                
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">
+                    Descripción
+                  </label>
+                  <textarea
+                    className="form-control form-control-lg"
+                    name="description"
+                    rows="4"
+                    placeholder="Describe el propósito del grupo"
+                    value={form.description}
+                    onChange={handleChange}
+                    required
+                  />
+                  <div className="form-text">
+                    Entre 10 y 300 caracteres
+                  </div>
+                </div>
+                
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">
+                    Imagen del Grupo (Opcional)
+                  </label>
+                  <input
+                    type="url"
+                    className="form-control form-control-lg"
+                    name="image"
+                    placeholder="https://ejemplo.com/imagen.jpg"
+                    value={form.image}
+                    onChange={handleChange}
+                  />
+                  <div className="form-text">
+                    URL de una imagen para representar el grupo
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <div className="form-check form-switch">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      name="isPrivate"
+                      id="isPrivate"
+                      checked={form.isPrivate}
+                      onChange={handleChange}
+                    />
+                    <label className="form-check-label fw-semibold" htmlFor="isPrivate">
+                      🔒 Grupo Privado
+                    </label>
+                    <div className="form-text">
+                      Los grupos privados requieren invitación para unirse
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="d-grid gap-2">
+                  <button 
+                    type="submit" 
+                    className="btn btn-warning btn-lg"
+                  >
+                    Actualizar Grupo
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn btn-outline-secondary"
+                    onClick={() => navigate("/groups")}
+                  >
+                    ← Volver a Grupos
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

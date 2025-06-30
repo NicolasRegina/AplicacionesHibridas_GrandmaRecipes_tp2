@@ -63,26 +63,155 @@ const Recipes = () => {
   };
 
   return (
-    <div>
-      <h2>Recetas</h2>
-      <button onClick={() => navigate("/recipes/new")}>Crear receta</button>
-      <RecipeSearchBar onSearch={handleSearch} />
-      {error && <p style={{color:"red"}}>{error}</p>}
-      {loading && <p>Cargando...</p>}
-      <ul>
-        {Array.isArray(recipes) && recipes.map((receta) => (
-          <li key={receta._id}>
-            <b>{receta.title}</b> - {receta.category}
-            <button onClick={() => navigate(`/recipes/${receta._id}`)}>Ver detalle</button>
-            {user && receta.author?._id === user._id && (
-              <>
-                <button onClick={() => navigate(`/recipes/${receta._id}/edit`)}>Editar</button>
-                <button onClick={() => handleDelete(receta._id)}>Eliminar</button>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
+    <div className="container py-4">
+      {/* Header Section */}
+      <div className="row mb-4">
+        <div className="col-12">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h1 className="display-5 fw-bold text-dark mb-0">
+              Mis Recetas
+            </h1>
+            <button 
+              className="btn btn-primary btn-lg"
+              onClick={() => navigate("/recipes/new")}
+            >
+              ➕ Nueva Receta
+            </button>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="mb-4">
+            <RecipeSearchBar onSearch={handleSearch} />
+          </div>
+          
+          {/* Status Messages */}
+          {error && (
+            <div className="alert alert-danger" role="alert">
+              ⚠️ {error}
+            </div>
+          )}
+          
+          {loading && (
+            <div className="text-center py-4">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Cargando...</span>
+              </div>
+              <p className="mt-2 text-muted">Cargando recetas...</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Recipes Grid */}
+      {!loading && (
+        <div className="row">
+          {Array.isArray(recipes) && recipes.length > 0 ? (
+            recipes.map((receta) => (
+              <div key={receta._id} className="col-12 col-md-6 col-lg-4 mb-4">
+                <div className="card h-100 shadow-sm border-0">
+                  {/* Recipe Image */}
+                  <div className="card-img-top bg-light d-flex align-items-center justify-content-center" style={{ height: '200px' }}>
+                    {receta.image ? (
+                      <img 
+                        src={receta.image} 
+                        alt={receta.title}
+                        className="img-fluid rounded-top"
+                        style={{ maxHeight: '200px', objectFit: 'cover', width: '100%' }}
+                      />
+                    ) : (
+                      <div className="text-center">
+                        🖼️
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Card Body */}
+                  <div className="card-body d-flex flex-column">
+                    <h5 className="card-title fw-bold text-primary mb-2">{receta.title}</h5>
+                    
+                    {/* Recipe Info */}
+                    <div className="mb-3">
+                      <span className="badge bg-secondary me-2">
+                        🏷️ {receta.category}
+                      </span>
+                      {receta.difficulty && (
+                        <span className="badge bg-info">
+                          📊 {receta.difficulty}
+                        </span>
+                      )}
+                    </div>
+                    
+                    {receta.description && (
+                      <p className="card-text text-muted small mb-3" style={{ flexGrow: 1 }}>
+                        {receta.description.length > 100 
+                          ? `${receta.description.substring(0, 100)}...` 
+                          : receta.description
+                        }
+                      </p>
+                    )}
+                    
+                    {/* Author Info */}
+                    <div className="mb-3">
+                      <small className="text-muted">
+                        👤 Por: {receta.author?.name || 'Anónimo'}
+                      </small>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="mt-auto">
+                      <div className="d-flex gap-2">
+                        <button 
+                          className="btn btn-outline-primary flex-fill"
+                          onClick={() => navigate(`/recipes/${receta._id}`)}
+                        >
+                          Ver Detalle
+                        </button>
+                        
+                        {user && receta.author?._id === user._id && (
+                          <>
+                            <button 
+                              className="btn btn-warning btn-sm"
+                              onClick={() => navigate(`/recipes/${receta._id}/edit`)}
+                              title="Editar receta"
+                            >
+                              ✏️
+                            </button>
+                            <button 
+                              className="btn btn-danger btn-sm"
+                              onClick={() => handleDelete(receta._id)}
+                              title="Eliminar receta"
+                            >
+                              🗑️
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            !loading && (
+              <div className="col-12">
+                <div className="text-center py-5">
+                  📚
+                  <h3 className="text-muted mb-3">No hay recetas disponibles</h3>
+                  <p className="text-muted mb-4">
+                    {error ? 'No se pudieron cargar las recetas.' : 'Comienza creando tu primera receta.'}
+                  </p>
+                  <button 
+                    className="btn btn-primary btn-lg"
+                    onClick={() => navigate("/recipes/new")}
+                  >
+                    ➕ Crear Primera Receta
+                  </button>
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      )}
     </div>
   );
 };

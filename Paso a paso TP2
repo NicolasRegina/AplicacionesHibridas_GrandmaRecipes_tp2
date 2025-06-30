@@ -37,4 +37,7 @@ Paso a paso para creacion TP 2:
     pages/: Cada vista importante (pantalla) tiene su propio archivo.
     routes/: Si tu app crece, mantener la navegación en un solo archivo ayuda a escalar y proteger rutas fácilmente.
 
-8) 
+8) TODO:    + Correcto manejo de imagenes
+            + Busqueda de grupos publicos
+            + Gestion de Usuarios en grupos
+            

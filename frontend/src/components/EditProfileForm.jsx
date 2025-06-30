@@ -34,151 +34,128 @@ const EditProfileForm = ({ profile, token, onSuccess, onCancel }) => {
   };
 
   return (
-    <div style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: "rgba(0,0,0,0.5)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 1000
-    }}>
-      <div style={{
-        backgroundColor: "white",
-        padding: "30px",
-        borderRadius: "8px",
-        width: "90%",
-        maxWidth: "500px",
-        maxHeight: "80vh",
-        overflow: "auto"
-      }}>
-        <h3 style={{ marginBottom: "20px" }}>Editar Perfil</h3>
-        
-        {error && <p style={{ color: "red", marginBottom: "15px" }}>{error}</p>}
-        
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
-              Nombre:
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-              minLength={2}
-              maxLength={50}
-              style={{
-                width: "100%",
-                padding: "8px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                fontSize: "14px"
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
-              Biografía:
-            </label>
-            <textarea
-              name="bio"
-              value={form.bio}
-              onChange={handleChange}
-              maxLength={200}
-              rows={4}
-              placeholder="Cuéntanos algo sobre ti..."
-              style={{
-                width: "100%",
-                padding: "8px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                fontSize: "14px",
-                resize: "vertical"
-              }}
-            />
-            <small style={{ color: "#666" }}>
-              {form.bio.length}/200 caracteres
-            </small>
-          </div>
-
-          <div style={{ marginBottom: "20px" }}>
-            <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>
-              URL de Foto de Perfil:
-            </label>
-            <input
-              type="url"
-              name="profilePicture"
-              value={form.profilePicture}
-              onChange={handleChange}
-              placeholder="https://ejemplo.com/mi-foto.jpg"
-              style={{
-                width: "100%",
-                padding: "8px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                fontSize: "14px"
-              }}
-            />
-            {form.profilePicture && (
-              <div style={{ marginTop: "10px", textAlign: "center" }}>
-                <img 
-                  src={form.profilePicture} 
-                  alt="Vista previa"
-                  style={{
-                    width: "80px",
-                    height: "80px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    border: "2px solid #ddd"
-                  }}
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
-              </div>
-            )}
-          </div>
-
-          <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+    <div className="modal show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+      <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">✏️ Editar Perfil</h5>
             <button 
-              type="button"
+              type="button" 
+              className="btn-close" 
               onClick={onCancel}
               disabled={loading}
-              style={{
-                backgroundColor: "#6c757d",
-                color: "white",
-                border: "none",
-                padding: "10px 20px",
-                borderRadius: "4px",
-                cursor: loading ? "not-allowed" : "pointer",
-                fontSize: "14px"
-              }}
+            ></button>
+          </div>
+          
+          <div className="modal-body">
+            {error && (
+              <div className="alert alert-danger" role="alert">
+                {error}
+              </div>
+            )}
+            
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label fw-semibold">
+                  Nombre
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  className="form-control"
+                  value={form.name}
+                  onChange={handleChange}
+                  required
+                  minLength={2}
+                  maxLength={50}
+                  placeholder="Tu nombre completo"
+                />
+                <div className="form-text">Entre 2 y 50 caracteres</div>
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label fw-semibold">
+                  Biografía
+                </label>
+                <textarea
+                  name="bio"
+                  className="form-control"
+                  value={form.bio}
+                  onChange={handleChange}
+                  maxLength={200}
+                  rows={4}
+                  placeholder="Cuéntanos algo sobre ti..."
+                />
+                <div className="form-text d-flex justify-content-between">
+                  <span>Opcional - Describe tus intereses culinarios</span>
+                  <span className={form.bio.length > 180 ? "text-warning" : "text-muted"}>
+                    {form.bio.length}/200
+                  </span>
+                </div>
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label fw-semibold">
+                  Foto de Perfil
+                </label>
+                <input
+                  type="url"
+                  name="profilePicture"
+                  className="form-control"
+                  value={form.profilePicture}
+                  onChange={handleChange}
+                  placeholder="https://ejemplo.com/mi-foto.jpg"
+                />
+                <div className="form-text">URL de tu imagen de perfil (opcional)</div>
+                
+                {form.profilePicture && (
+                  <div className="text-center mt-3">
+                    <img 
+                      src={form.profilePicture} 
+                      alt="Vista previa"
+                      className="rounded-circle border border-2 border-light shadow"
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        objectFit: "cover"
+                      }}
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                      }}
+                    />
+                    <div className="small text-muted mt-1">Vista previa</div>
+                  </div>
+                )}
+              </div>
+            </form>
+          </div>
+          
+          <div className="modal-footer">
+            <button 
+              type="button"
+              className="btn btn-outline-secondary"
+              onClick={onCancel}
+              disabled={loading}
             >
-              Cancelar
+              ❌ Cancelar
             </button>
             <button 
               type="submit"
+              className="btn btn-primary"
+              onClick={handleSubmit}
               disabled={loading}
-              style={{
-                backgroundColor: loading ? "#ccc" : "#28a745",
-                color: "white",
-                border: "none",
-                padding: "10px 20px",
-                borderRadius: "4px",
-                cursor: loading ? "not-allowed" : "pointer",
-                fontSize: "14px"
-              }}
             >
-              {loading ? "Guardando..." : "Guardar Cambios"}
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Guardando...
+                </>
+              ) : (
+                "Guardar Cambios"
+              )}
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
