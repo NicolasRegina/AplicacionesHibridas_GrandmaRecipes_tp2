@@ -14,8 +14,8 @@ const EditRecipeForm = () => {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    ingredients: [],
-    steps: [],
+    ingredients: [{ ...initialIngredient }],
+    steps: [{ ...initialStep }],
     prepTime: 1,
     cookTime: 0,
     servings: 1,
@@ -26,6 +26,7 @@ const EditRecipeForm = () => {
     group: "",
     isPrivate: false,
   });
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -34,29 +35,30 @@ const EditRecipeForm = () => {
       try {
         const data = await getRecipeById(id, token);
         setForm({
-          title: data.title,
-          description: data.description,
+          title: data.title || "",
+          description: data.description || "",
           ingredients: data.ingredients.length
             ? data.ingredients
             : [{ ...initialIngredient }],
           steps: data.steps.length ? data.steps : [{ ...initialStep }],
-          prepTime: data.prepTime,
-          cookTime: data.cookTime,
-          servings: data.servings,
-          difficulty: data.difficulty,
-          category: data.category,
+          prepTime: data.prepTime || 1,
+          cookTime: data.cookTime || 0,
+          servings: data.servings || 1,
+          difficulty: data.difficulty || "Fácil",
+          category: data.category || "Desayuno",
           tags: data.tags || [],
           image: data.image || "",
-          group: data.group?._id || "",
-          isPrivate: data.isPrivate,
+          group:
+            typeof data.group === "object" ? data.group._id : data.group || "",
+          isPrivate: data.isPrivate ?? false,
         });
       } catch (err) {
         setError("No se pudo cargar la receta.");
       }
+      setLoading(false);
     };
     fetchRecipe();
-    // eslint-disable-next-line
-  }, [id]);
+  }, [id, token]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -80,6 +82,7 @@ const EditRecipeForm = () => {
       ingredients: [...form.ingredients, { ...initialIngredient }],
     });
   };
+  if (loading) return <p>Cargando datos de la receta...</p>;
 
   const removeIngredient = (index) => {
     const updated = form.ingredients.filter((_, i) => i !== index);
@@ -144,8 +147,17 @@ const EditRecipeForm = () => {
       return;
     }
 
+    const cleanIngredients = form.ingredients.map(({ _id, ...rest }) => rest);
+    const cleanSteps = form.steps.map(({ _id, ...rest }) => rest);
+
+    const dataToSend = {
+      ...form,
+      ingredients: cleanIngredients,
+      steps: cleanSteps,
+    };
+
     try {
-      await updateRecipe(id, form, token);
+      await updateRecipe(id, dataToSend, token);
       setSuccess("Receta actualizada exitosamente");
       setTimeout(() => navigate("/recipes"), 1200);
     } catch (err) {

@@ -4,7 +4,7 @@ import { getRecipes, deleteRecipe } from "../api/recipes";
 import { useNavigate } from "react-router-dom";
 
 const Recipes = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -48,10 +48,13 @@ const Recipes = () => {
           {recipes.map((receta) => (
             <li key={receta._id}>
               <b>{receta.title}</b> - {receta.category}
-              <button onClick={() => navigate(`/recipes/${receta._id}/edit`)}>
-                Editar
-              </button>
-              <button onClick={() => handleDelete(receta._id)}>Eliminar</button>
+              <button onClick={() => navigate(`/recipes/${receta._id}`)}>Ver detalle</button>
+              {user && receta.author?._id === user._id && (
+                <>
+                  <button onClick={() => navigate(`/recipes/${receta._id}/edit`)}>Editar</button>
+                  <button onClick={() => handleDelete(receta._id)}>Eliminar</button>
+                </>
+              )}
             </li>
           ))}
         </ul>

@@ -14,6 +14,7 @@ const EditGroupForm = () => {
     image: "",
     isPrivate: true,
   });
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -22,18 +23,18 @@ const EditGroupForm = () => {
       try {
         const data = await getGroupById(id, token);
         setForm({
-          name: data.name,
-          description: data.description,
+          name: data.name || "",
+          description: data.description || "",
           image: data.image || "",
-          isPrivate: data.isPrivate,
+          isPrivate: data.isPrivate ?? true,
         });
       } catch (err) {
         setError("No se pudo cargar el grupo.");
       }
+      setLoading(false);
     };
     fetchGroup();
-    // eslint-disable-next-line
-  }, [id]);
+  }, [id, token]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -75,6 +76,8 @@ const EditGroupForm = () => {
       setError(err.response?.data?.message || "Error al actualizar el grupo");
     }
   };
+
+  if (loading) return <p>Cargando datos del grupo...</p>;
 
   return (
     <div>

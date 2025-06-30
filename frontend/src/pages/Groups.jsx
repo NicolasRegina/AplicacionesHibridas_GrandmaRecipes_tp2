@@ -4,7 +4,7 @@ import { getGroups, deleteGroup } from "../api/groups";
 import { useNavigate } from "react-router-dom";
 
 const Groups = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -43,15 +43,25 @@ const Groups = () => {
         <p>Cargando...</p>
       ) : (
         <ul>
-          {groups.map((grupo) => (
-            <li key={grupo._id}>
-              <b>{grupo.name}</b> - {grupo.description}
-              <button onClick={() => navigate(`/groups/${grupo._id}/edit`)}>
-                Editar
-              </button>
-              <button onClick={() => handleDelete(grupo._id)}>Eliminar</button>
-            </li>
-          ))}
+          {groups.map((grupo) => {
+            // Buscá el member actual (puede ser null si no es miembro)
+            const member = grupo.members.find((m) => m.user?._id === user._id);
+            const isAdmin = member && member.role === "admin";
+            const isCreator = grupo.creator?._id === user._id;
+
+            return (
+              <li key={grupo._id}>
+                <b>{grupo.name}</b> - {grupo.description}
+                <button onClick={() => navigate(`/groups/${grupo._id}`)}>Ver detalle</button>
+                {isAdmin && (
+                  <button onClick={() => navigate(`/groups/${grupo._id}/edit`)}>Editar</button>
+                )}
+                {isCreator && (
+                  <button onClick={() => handleDelete(grupo._id)}>Eliminar</button>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

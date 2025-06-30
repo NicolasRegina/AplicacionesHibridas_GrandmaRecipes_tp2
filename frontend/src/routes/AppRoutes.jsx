@@ -9,6 +9,10 @@ import GroupForm from "../pages/GroupForm";
 import NotFound from "../pages/NotFound";
 import Navbar from "../components/Navbar";
 import ProtectedRoute from "../context/ProtectedRoute";
+import EditRecipeForm from "../pages/EditRecipeForm";
+import EditGroupForm from "../pages/EditGroupForm";
+import RecipeDetail from "../pages/RecipeDetail";
+import GroupDetail from "../pages/GroupDetail";
 
 const AppRoutes = () => (
   <BrowserRouter>
@@ -36,10 +40,18 @@ const AppRoutes = () => (
         }
       />
       <Route
+        path="/recipes/:id"
+        element={
+          <ProtectedRoute>
+            <RecipeDetail />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/recipes/:id/edit"
         element={
           <ProtectedRoute>
-            <RecipeForm />
+            <EditRecipeForm />
           </ProtectedRoute>
         }
       />
@@ -61,10 +73,18 @@ const AppRoutes = () => (
         }
       />
       <Route
+        path="/groups/:id"
+        element={
+          <ProtectedRoute>
+            <GroupDetail />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/groups/:id/edit"
         element={
           <ProtectedRoute>
-            <GroupForm />
+            <EditGroupForm />
           </ProtectedRoute>
         }
       />
