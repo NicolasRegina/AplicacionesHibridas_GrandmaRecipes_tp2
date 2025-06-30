@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { createGroup } from "../api/groups";
+import { getGroupById, updateGroup } from "../api/groups";
 
-const GroupForm = () => {
+const EditGroupForm = () => {
+  const { id } = useParams();
   const { token } = useAuth();
   const navigate = useNavigate();
 
@@ -15,6 +16,24 @@ const GroupForm = () => {
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    const fetchGroup = async () => {
+      try {
+        const data = await getGroupById(id, token);
+        setForm({
+          name: data.name,
+          description: data.description,
+          image: data.image || "",
+          isPrivate: data.isPrivate,
+        });
+      } catch (err) {
+        setError("No se pudo cargar el grupo.");
+      }
+    };
+    fetchGroup();
+    // eslint-disable-next-line
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -29,17 +48,18 @@ const GroupForm = () => {
     setError("");
     setSuccess("");
 
-    // Validaciones frontend según Joi/backend
     if (form.name.trim().length < 3 || form.name.trim().length > 50) {
       setError("El nombre debe tener entre 3 y 50 caracteres.");
       return;
     }
-    if (form.description.trim().length < 10 || form.description.trim().length > 300) {
+    if (
+      form.description.trim().length < 10 ||
+      form.description.trim().length > 300
+    ) {
       setError("La descripción debe tener entre 10 y 300 caracteres.");
       return;
     }
 
-    // Opcionalmente, no enviar campo image si está vacío (deja que backend ponga el default)
     const groupData = {
       name: form.name.trim(),
       description: form.description.trim(),
@@ -48,19 +68,19 @@ const GroupForm = () => {
     if (form.image.trim()) groupData.image = form.image.trim();
 
     try {
-      await createGroup(groupData, token);
-      setSuccess("Grupo creado exitosamente");
+      await updateGroup(id, groupData, token);
+      setSuccess("Grupo actualizado exitosamente");
       setTimeout(() => navigate("/groups"), 1200);
     } catch (err) {
-      setError(err.response?.data?.message || "Error al crear el grupo");
+      setError(err.response?.data?.message || "Error al actualizar el grupo");
     }
   };
 
   return (
     <div>
-      <h2>Crear Grupo</h2>
-      {error && <p style={{color: "red"}}>{error}</p>}
-      {success && <p style={{color: "green"}}>{success}</p>}
+      <h2>Editar Grupo</h2>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {success && <p style={{ color: "green" }}>{success}</p>}
       <form onSubmit={handleSubmit}>
         <input
           name="name"
@@ -95,10 +115,10 @@ const GroupForm = () => {
           />
         </label>
         <br />
-        <button type="submit">Crear Grupo</button>
+        <button type="submit">Actualizar Grupo</button>
       </form>
     </div>
   );
 };
 
-export default GroupForm;
+export default EditGroupForm;

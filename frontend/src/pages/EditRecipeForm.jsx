@@ -1,21 +1,21 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { createRecipe } from "../api/recipes";
-import { getGroups } from "../api/groups";
+import { getRecipeById, updateRecipe } from "../api/recipes";
 
 const initialIngredient = { name: "", quantity: "", unit: "" };
 const initialStep = { number: 1, description: "" };
 
-const RecipeForm = () => {
+const EditRecipeForm = () => {
+  const { id } = useParams();
   const { token } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
     title: "",
     description: "",
-    ingredients: [{ ...initialIngredient }],
-    steps: [{ ...initialStep }],
+    ingredients: [],
+    steps: [],
     prepTime: 1,
     cookTime: 0,
     servings: 1,
@@ -28,28 +28,35 @@ const RecipeForm = () => {
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [groups, setGroups] = useState([]);
-  const [loadingGroups, setLoadingGroups] = useState(false);
 
-  // Cargar grupos al montar el componente
   useEffect(() => {
-    const fetchGroups = async () => {
+    const fetchRecipe = async () => {
       try {
-        setLoadingGroups(true);
-        const response = await getGroups(token);
-        setGroups(response.data || response); // Dependiendo de la estructura de respuesta
+        const data = await getRecipeById(id, token);
+        setForm({
+          title: data.title,
+          description: data.description,
+          ingredients: data.ingredients.length
+            ? data.ingredients
+            : [{ ...initialIngredient }],
+          steps: data.steps.length ? data.steps : [{ ...initialStep }],
+          prepTime: data.prepTime,
+          cookTime: data.cookTime,
+          servings: data.servings,
+          difficulty: data.difficulty,
+          category: data.category,
+          tags: data.tags || [],
+          image: data.image || "",
+          group: data.group?._id || "",
+          isPrivate: data.isPrivate,
+        });
       } catch (err) {
-        console.error("Error al cargar grupos:", err);
-        setGroups([]);
-      } finally {
-        setLoadingGroups(false);
+        setError("No se pudo cargar la receta.");
       }
     };
-
-    if (token) {
-      fetchGroups();
-    }
-  }, [token]);
+    fetchRecipe();
+    // eslint-disable-next-line
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -120,7 +127,6 @@ const RecipeForm = () => {
     setError("");
     setSuccess("");
 
-    // Validaciones mínimas frontend
     if (form.title.length < 3 || form.title.length > 100) {
       setError("El título debe tener entre 3 y 100 caracteres.");
       return;
@@ -139,17 +145,17 @@ const RecipeForm = () => {
     }
 
     try {
-      await createRecipe(form, token);
-      setSuccess("Receta creada exitosamente");
+      await updateRecipe(id, form, token);
+      setSuccess("Receta actualizada exitosamente");
       setTimeout(() => navigate("/recipes"), 1200);
     } catch (err) {
-      setError(err.response?.data?.message || "Error al crear la receta");
+      setError(err.response?.data?.message || "Error al actualizar la receta");
     }
   };
 
   return (
     <div>
-      <h2>Crear Receta</h2>
+      <h2>Editar Receta</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
       <form onSubmit={handleSubmit}>
@@ -311,26 +317,11 @@ const RecipeForm = () => {
           />
         </label>
         <br />
-        <label>
-          Grupo:
-          <select name="group" value={form.group} onChange={handleChange}>
-            <option value="">Sin grupo</option>
-            {loadingGroups ? (
-              <option disabled>Cargando grupos...</option>
-            ) : (
-              groups.map((group) => (
-                <option key={group._id} value={group._id}>
-                  {group.name}
-                </option>
-              ))
-            )}
-          </select>
-        </label>
 
-        <button type="submit">Crear Receta</button>
+        <button type="submit">Actualizar Receta</button>
       </form>
     </div>
   );
 };
 
-export default RecipeForm;
+export default EditRecipeForm;
