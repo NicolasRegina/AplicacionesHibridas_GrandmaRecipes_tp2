@@ -6,6 +6,7 @@ import Recipes from "../pages/Recipes";
 import RecipeForm from "../pages/RecipeForm";
 import Groups from "../pages/Groups";
 import GroupForm from "../pages/GroupForm";
+import Profile from "../pages/Profile";
 import NotFound from "../pages/NotFound";
 import Navbar from "../components/Navbar";
 import ProtectedRoute from "../context/ProtectedRoute";
@@ -85,6 +86,15 @@ const AppRoutes = () => (
         element={
           <ProtectedRoute>
             <EditGroupForm />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
           </ProtectedRoute>
         }
       />

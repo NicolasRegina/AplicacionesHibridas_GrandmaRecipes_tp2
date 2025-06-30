@@ -11,6 +11,7 @@ const Navbar = () => {
         <>
           <Link to="/recipes">Recetas</Link>
           <Link to="/groups">Grupos</Link>
+          <Link to="/profile">Mi Perfil</Link>
           <button onClick={logout}>Cerrar Sesión</button>
         </>
       ) : (
