@@ -121,11 +121,6 @@ cd frontend
 npm run dev
 ```
 
-### **Opción 2: Script único (si configuraste concurrently)**
-```bash
-npm run dev
-```
-
 ## Acceso a la Aplicación
 
 - **Frontend:** http://localhost:5173
@@ -221,4 +216,4 @@ npm run build      # Build para producción
 
 **Tu Nombre**
 - GitHub: [@NicolasRegina](https://github.com/NicolasRegina)
-- Email: tu.email@ejemplo.com
+- Email: nicolas.regina@davinci.edu.ar
