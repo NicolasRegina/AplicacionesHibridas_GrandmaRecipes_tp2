@@ -552,7 +552,7 @@ const EditRecipeForm = () => {
                     Cancelar
                   </button>
                   <button type="submit" className="btn btn-success btn-lg">
-                    💾 Actualizar Receta
+                    Actualizar Receta
                   </button>
                 </div>
               </form>

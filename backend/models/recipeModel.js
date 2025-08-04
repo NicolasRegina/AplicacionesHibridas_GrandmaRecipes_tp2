@@ -105,6 +105,23 @@ const recipeSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
+        // Estado de moderación
+        moderationStatus: {
+            type: String,
+            enum: ["pending", "approved", "rejected"],
+            default: "pending",
+        },
+        moderatedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
+        moderatedAt: {
+            type: Date,
+        },
+        rejectionReason: {
+            type: String,
+            trim: true,
+        },
     },
     {
         timestamps: true,

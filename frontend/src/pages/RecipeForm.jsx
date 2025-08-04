@@ -161,7 +161,7 @@ const RecipeForm = () => {
       };
       
       await createRecipe(recipeData, token);
-      setSuccess("Receta creada exitosamente");
+      setSuccess("Receta creada exitosamente. Está pendiente de aprobación por un administrador antes de ser pública.");
       setTimeout(() => navigate("/recipes"), 1200);
     } catch (err) {
       setError(err.response?.data?.message || "Error al crear la receta");
@@ -177,6 +177,18 @@ const RecipeForm = () => {
               <h2 className="text-center mb-4 text-primary">
                 Crear Nueva Receta
               </h2>
+
+              {/* Información sobre moderación */}
+              <div className="alert alert-info mb-4" role="alert">
+                <div className="d-flex align-items-center mb-2">
+                  <i className="bi bi-info-circle-fill me-2"></i>
+                  <strong>Proceso de moderación</strong>
+                </div>
+                <small>
+                  Tu receta será revisada por un administrador antes de estar disponible públicamente. 
+                  Mientras tanto, podrás verla en tu perfil y editarla normalmente.
+                </small>
+              </div>
 
               {error && (
                 <div className="alert alert-danger" role="alert">

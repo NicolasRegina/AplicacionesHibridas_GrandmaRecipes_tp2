@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import User from "../models/userModel.js"
-import { validateUser, validateLogin, validateUserByAdmin } from "../validation/validation.js"
+import { validateUser, validateLogin } from "../validation/validation.js"
 
 // Registrar un nuevo usuario
 export const registerUser = async (req, res) => {
@@ -154,7 +154,7 @@ export const deleteUserById = async (req, res) => {
 export const registerUserByAdmin = async (req, res) => {
     try {
         // Validar datos de entrada
-        const { error } = validateUserByAdmin(req.body)
+        const { error } = validateUser(req.body)
         if (error) return res.status(400).json({ message: error.details[0].message })
 
         // Verificar si el email ya existe
@@ -162,7 +162,7 @@ export const registerUserByAdmin = async (req, res) => {
         if (emailExists) return res.status(400).json({ message: "El email ya está registrado" })
 
         // Solo un admin puede crear otro admin
-        let role = req.body.role || "user";
+        let role = "user";
         if (req.body.role === "admin") {
             if (!req.user || req.user.role !== "admin") {
                 return res.status(403).json({ message: "Solo un administrador puede crear otros administradores." });

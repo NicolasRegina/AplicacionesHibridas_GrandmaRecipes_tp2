@@ -15,6 +15,7 @@ const GroupForm = () => {
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [createdGroup, setCreatedGroup] = useState(null);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -48,9 +49,10 @@ const GroupForm = () => {
     if (form.image.trim()) groupData.image = form.image.trim();
 
     try {
-      await createGroup(groupData, token);
-      setSuccess("Grupo creado exitosamente");
-      setTimeout(() => navigate("/groups"), 1200);
+      const result = await createGroup(groupData, token);
+      setCreatedGroup(result.group); // El grupo está en result.group
+      setSuccess("Grupo creado exitosamente. Está pendiente de aprobación por un administrador antes de ser público.");
+      // No redirigir inmediatamente para mostrar el código
     } catch (err) {
       setError(err.response?.data?.message || "Error al crear el grupo");
     }
@@ -65,6 +67,18 @@ const GroupForm = () => {
               <h2 className="text-center mb-4 text-success">
                 Crear Nuevo Grupo
               </h2>
+
+              {/* Información sobre moderación */}
+              <div className="alert alert-info mb-4" role="alert">
+                <div className="d-flex align-items-center mb-2">
+                  <i className="bi bi-info-circle-fill me-2"></i>
+                  <strong>Proceso de moderación</strong>
+                </div>
+                <small>
+                  Tu grupo será revisado por un administrador antes de estar disponible públicamente. 
+                  Mientras tanto, podrás acceder a él normalmente y gestionar sus miembros.
+                </small>
+              </div>
               
               {error && (
                 <div className="alert alert-danger text-center" role="alert">
@@ -72,17 +86,59 @@ const GroupForm = () => {
                 </div>
               )}
               
-              {success && (
+              {success && createdGroup && (
+                <div className="alert alert-success text-center" role="alert">
+                  <div className="mb-3">
+                    ✅ {success}
+                  </div>
+                  <div className="card bg-light">
+                    <div className="card-body">
+                      <h5 className="card-title">Código de Invitación</h5>
+                      <div className="badge bg-primary fs-6 px-3 py-2 mb-2">
+                        {createdGroup.inviteCode}
+                      </div>
+                      <p className="card-text small mb-3">
+                        Comparte este código para invitar miembros al grupo
+                      </p>
+                      <div className="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button 
+                          className="btn btn-outline-primary"
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText(createdGroup.inviteCode);
+                              alert('¡Código copiado al portapapeles!');
+                            } catch {
+                              alert('No se pudo copiar el código');
+                            }
+                          }}
+                        >
+                          📋 Copiar Código
+                        </button>
+                        <button 
+                          className="btn btn-success"
+                          onClick={() => navigate(`/groups/${createdGroup._id}`)}
+                        >
+                          Ver Grupo
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {success && !createdGroup && (
                 <div className="alert alert-success text-center" role="alert">
                   ✅ {success}
                 </div>
               )}
               
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label className="form-label fw-semibold">
-                    Nombre del Grupo
-                  </label>
+              {/* Solo mostrar el formulario si no se ha creado un grupo exitosamente */}
+              {!createdGroup && (
+                <form onSubmit={handleSubmit}>
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      Nombre del Grupo
+                    </label>
                   <input
                     type="text"
                     className="form-control form-control-lg"
@@ -158,8 +214,8 @@ const GroupForm = () => {
                   >
                     ✨ Crear Grupo
                   </button>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="btn btn-outline-secondary"
                     onClick={() => navigate("/groups")}
                   >
@@ -167,6 +223,20 @@ const GroupForm = () => {
                   </button>
                 </div>
               </form>
+              )}
+              
+              {/* Botón para volver cuando se ha creado un grupo */}
+              {createdGroup && (
+                <div className="d-grid">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={() => navigate("/groups")}
+                  >
+                    ← Volver a Grupos
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useModerationCounts } from "../hooks/useModerationCounts";
 import logo from "../assets/logo.png";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const { pendingGroups, pendingRecipes } = useModerationCounts();
+
+  const totalPending = pendingGroups + pendingRecipes;
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
@@ -53,6 +57,57 @@ const Navbar = () => {
                     <i className="bi bi-people me-1"></i>Grupos
                   </Link>
                 </li>
+                {user.role === "admin" && (
+                  <li className="nav-item dropdown">
+                    <a
+                      className="nav-link dropdown-toggle text-warning fw-medium"
+                      href="#"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      style={{ opacity: 0.95 }}
+                    >
+                      <i className="bi bi-shield-lock me-1"></i>Administración
+                      {totalPending > 0 && (
+                        <span className="badge bg-danger ms-2">{totalPending}</span>
+                      )}
+                    </a>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <Link className="dropdown-item" to="/admin/users">
+                          <i className="bi bi-people me-2"></i>Gestionar Usuarios
+                        </Link>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item" to="/admin/groups">
+                          <i className="bi bi-collection me-2"></i>Gestionar Grupos
+                        </Link>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item" to="/admin/recipes">
+                          <i className="bi bi-book me-2"></i>Gestionar Recetas
+                        </Link>
+                      </li>
+                      <li><hr className="dropdown-divider" /></li>
+                      <li>
+                        <Link className="dropdown-item text-warning" to="/moderation/groups">
+                          <i className="bi bi-eye me-2"></i>Moderar Grupos
+                          {pendingGroups > 0 && (
+                            <span className="badge bg-danger ms-2">{pendingGroups}</span>
+                          )}
+                        </Link>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item text-warning" to="/moderation/recipes">
+                          <i className="bi bi-eye me-2"></i>Moderar Recetas
+                          {pendingRecipes > 0 && (
+                            <span className="badge bg-danger ms-2">{pendingRecipes}</span>
+                          )}
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
+                )}
               </>
             )}
           </ul>

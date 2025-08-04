@@ -69,7 +69,7 @@ const Recipes = () => {
         <div className="col-12">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h1 className="display-5 fw-bold text-dark mb-0">
-              Mis Recetas
+              {user?.role === "admin" ? "Todas las Recetas" : "Mis Recetas"}
             </h1>
             <button 
               className="btn btn-primary btn-lg"
@@ -167,7 +167,7 @@ const Recipes = () => {
                           Ver Detalle
                         </button>
                         
-                        {user && receta.author?._id === user._id && (
+                        {user && (receta.author?._id === user._id || user.role === "admin") && (
                           <>
                             <button 
                               className="btn btn-warning btn-sm"

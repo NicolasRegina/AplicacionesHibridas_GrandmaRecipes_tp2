@@ -8,12 +8,17 @@ import Groups from "../pages/Groups";
 import GroupForm from "../pages/GroupForm";
 import Profile from "../pages/Profile";
 import NotFound from "../pages/NotFound";
+import AdminUsers from "../pages/AdminUsers";
+import AdminGroups from "../pages/AdminGroups";
+import AdminRecipes from "../pages/AdminRecipes";
 import Navbar from "../components/Navbar";
 import ProtectedRoute from "../context/ProtectedRoute";
 import EditRecipeForm from "../pages/EditRecipeForm";
 import EditGroupForm from "../pages/EditGroupForm";
 import RecipeDetail from "../pages/RecipeDetail";
 import GroupDetail from "../pages/GroupDetail";
+import ModerationGroups from "../pages/ModerationGroups";
+import ModerationRecipes from "../pages/ModerationRecipes";
 
 const AppRoutes = () => (
   <BrowserRouter>
@@ -22,6 +27,50 @@ const AppRoutes = () => (
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      {/* Rutas de administración */}
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute>
+            <AdminUsers />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/groups"
+        element={
+          <ProtectedRoute>
+            <AdminGroups />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/recipes"
+        element={
+          <ProtectedRoute>
+            <AdminRecipes />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Rutas de moderación */}
+      <Route
+        path="/moderation/groups"
+        element={
+          <ProtectedRoute>
+            <ModerationGroups />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/moderation/recipes"
+        element={
+          <ProtectedRoute>
+            <ModerationRecipes />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Rutas protegidas */}
       <Route

@@ -37,3 +37,62 @@ export const deleteGroup = async (id, token) => {
     });
     return response.data;
 };
+
+// ========== NUEVAS FUNCIONES DE BÚSQUEDA E INVITACIONES ==========
+
+// Buscar grupos por nombre
+export const searchGroups = async (query, token) => {
+    const response = await axios.get(`${API_URL}/groups/search?q=${encodeURIComponent(query)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+};
+
+// Buscar grupo por código de invitación
+export const findGroupByInviteCode = async (code, token) => {
+    const response = await axios.get(`${API_URL}/groups/invite/${code}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+};
+
+// Solicitar unirse a un grupo
+export const requestJoinGroup = async (code, token) => {
+    const response = await axios.post(`${API_URL}/groups/invite/${code}/join`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+};
+
+// Aprobar solicitud de unirse
+export const approveJoinRequest = async (groupId, userId, token) => {
+    const response = await axios.post(`${API_URL}/groups/${groupId}/approve/${userId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+};
+
+// Rechazar solicitud de unirse
+export const rejectJoinRequest = async (groupId, userId, token) => {
+    const response = await axios.post(`${API_URL}/groups/${groupId}/reject/${userId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+};
+
+// Cambiar rol de miembro
+export const changeMemberRole = async (groupId, userId, role, token) => {
+    const response = await axios.put(`${API_URL}/groups/${groupId}/members/${userId}/role`, 
+        { role }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+};
+
+// Remover miembro
+export const removeMember = async (groupId, userId, token) => {
+    const response = await axios.delete(`${API_URL}/groups/${groupId}/members/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+};
