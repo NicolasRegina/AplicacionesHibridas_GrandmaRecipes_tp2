@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getRecipes, searchRecipes, deleteRecipe } from "../api/recipes";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import RecipeSearchBar from "../components/RecipeSearchBar";
+import ModerationStatus from "../components/ModerationStatus";
 
 const Recipes = () => {
   const { token, user } = useAuth();
+  const location = useLocation();
   const [recipes, setRecipes] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -48,8 +50,15 @@ const Recipes = () => {
 
   useEffect(() => {
     fetchRecipes();
+    
+    // Si viene con query param refresh=true, limpiar la URL
+    const params = new URLSearchParams(location.search);
+    if (params.get('refresh') === 'true') {
+      // Limpiar la URL sin recargar la página
+      navigate('/recipes', { replace: true });
+    }
     // eslint-disable-next-line
-  }, []);
+  }, [location.search]);
 
   const handleDelete = async (id) => {
     if (window.confirm("¿Seguro que deseas borrar la receta?")) {
@@ -129,6 +138,16 @@ const Recipes = () => {
                   <div className="card-body d-flex flex-column">
                     <h5 className="card-title fw-bold text-primary mb-2">{receta.title}</h5>
                     
+                    {/* Mostrar estado de moderación si es del usuario */}
+                    {receta.author?._id === user?._id && (
+                      <ModerationStatus 
+                        status={receta.moderationStatus}
+                        rejectionReason={receta.rejectionReason}
+                        moderatedAt={receta.moderatedAt}
+                        type="receta"
+                      />
+                    )}
+                    
                     {/* Recipe Info */}
                     <div className="mb-3">
                       <span className="badge bg-secondary me-2">
@@ -167,7 +186,7 @@ const Recipes = () => {
                           Ver Detalle
                         </button>
                         
-                        {user && (receta.author?._id === user._id || user.role === "admin") && (
+                        {user && (receta.author?._id === user?._id || user.role === "admin") && (
                           <>
                             <button 
                               className="btn btn-warning btn-sm"

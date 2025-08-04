@@ -147,6 +147,10 @@ export const createRecipe = async (req, res) => {
         // Guardar receta
         const savedRecipe = await recipe.save()
 
+        // Populate los campos necesarios para el frontend
+        await savedRecipe.populate('author', 'name')
+        await savedRecipe.populate('group', 'name')
+
         res.status(201).json({
             message: "Receta creada exitosamente",
             recipe: savedRecipe,
@@ -165,7 +169,7 @@ export const getRecipes = async (req, res) => {
         if (req.user.role === "admin") {
             filter = {}; // Sin filtro - ve todo
         } else {
-            // Usuario normal: solo ve recetas públicas aprobadas o propias (independiente del estado)
+            // Usuario normal: ve recetas públicas aprobadas + todas sus propias recetas (cualquier estado)
             filter = {
                 $or: [
                     { 
@@ -256,11 +260,28 @@ export const updateRecipe = async (req, res) => {
             return res.status(403).json({ message: "No tienes permiso para actualizar esta receta" })
         }
 
+        // Preparar datos de actualización
+        const updateData = { ...req.body }
+
+        // Si no es admin y está editando, resetear estado de moderación
+        if (req.user.role !== "admin") {
+            updateData.moderationStatus = "pending"
+            updateData.moderatedBy = null
+            updateData.moderatedAt = null
+            updateData.rejectionReason = null
+        }
+
         // Actualizar receta
-        const updatedRecipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true })
+        const updatedRecipe = await Recipe.findByIdAndUpdate(req.params.id, updateData, { new: true })
+            .populate("author", "name")
+            .populate("group", "name")
+
+        const message = req.user.role === "admin" 
+            ? "Receta actualizada exitosamente"
+            : "Receta actualizada exitosamente. Está pendiente de aprobación nuevamente."
 
         res.status(200).json({
-            message: "Receta actualizada exitosamente",
+            message,
             recipe: updatedRecipe,
         })
     } catch (err) {

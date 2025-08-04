@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getRecipeById, updateRecipe } from "../api/recipes";
-import { getGroups } from "../api/groups";
+import { getUserGroups } from "../api/groups";
 
 const initialIngredient = { name: "", quantity: "", unit: "" };
 const initialStep = { number: 1, description: "" };
@@ -39,7 +39,7 @@ const EditRecipeForm = () => {
     const fetchGroups = async () => {
       try {
         setLoadingGroups(true);
-        const response = await getGroups(token);
+        const response = await getUserGroups(token);
         setGroups(response.data || response);
       } catch (err) {
         console.error("Error al cargar grupos:", err);
@@ -200,9 +200,9 @@ const EditRecipeForm = () => {
     };
 
     try {
-      await updateRecipe(id, dataToSend, token);
-      setSuccess("Receta actualizada exitosamente");
-      setTimeout(() => navigate("/recipes"), 1200);
+      const response = await updateRecipe(id, dataToSend, token);
+      setSuccess(response.message || "Receta actualizada exitosamente");
+      setTimeout(() => navigate("/recipes"), 1500);
     } catch (err) {
       setError(err.response?.data?.message || "Error al actualizar la receta");
     }

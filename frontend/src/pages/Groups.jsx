@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { getGroups, deleteGroup } from "../api/groups";
 import { useNavigate } from "react-router-dom";
 import GroupSearchBar from "../components/GroupSearchBar";
+import ModerationStatus from "../components/ModerationStatus";
 
 const Groups = () => {
   const { token, user } = useAuth();
@@ -159,6 +160,15 @@ const Groups = () => {
                               </small>
                             </div>
                             
+                            {/* Moderation Status for own groups */}
+                            {grupo.creator?._id === user?._id && (
+                              <ModerationStatus 
+                                status={grupo.moderationStatus} 
+                                rejectionReason={grupo.rejectionReason}
+                                type="grupo"
+                              />
+                            )}
+                            
                             {/* Action Buttons */}
                             <div className="mt-auto">
                               <div className="d-flex gap-2">
@@ -277,6 +287,15 @@ const Groups = () => {
                             </small>
                           </div>
                           
+                          {/* Moderation Status for own groups */}
+                          {grupo.creator?._id === user?._id && (
+                            <ModerationStatus 
+                              status={grupo.moderationStatus} 
+                              rejectionReason={grupo.rejectionReason}
+                              type="grupo"
+                            />
+                          )}
+                          
                           {/* Action Buttons */}
                           <div className="mt-auto">
                             <button 
@@ -354,6 +373,13 @@ const Groups = () => {
                               👤 Creado por: {grupo.creator?.name || 'Anónimo'}
                             </small>
                           </div>
+                          
+                          {/* Moderation Status - visible for all in admin view */}
+                          <ModerationStatus 
+                            status={grupo.moderationStatus} 
+                            rejectionReason={grupo.rejectionReason}
+                            type="grupo"
+                          />
                           
                           <div className="mt-auto">
                             <div className="d-flex gap-2">

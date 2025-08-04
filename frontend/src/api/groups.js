@@ -10,6 +10,13 @@ export const getGroups = async (token) => {
     return response.data;
 };
 
+export const getUserGroups = async (token) => {
+    const response = await axios.get(`${API_URL}/groups/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+};
+
 export const getGroupById = async (id, token) => {
     const response = await axios.get(`${API_URL}/groups/${id}`, {
         headers: { Authorization: `Bearer ${token}` },

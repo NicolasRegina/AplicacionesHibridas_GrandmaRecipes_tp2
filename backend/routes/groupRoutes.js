@@ -2,6 +2,7 @@ import express from "express"
 import {
     createGroup,
     getGroups,
+    getUserGroups,
     getGroupById,
     updateGroup,
     deleteGroup,
@@ -28,6 +29,7 @@ const groupRouter = express.Router()
 
 groupRouter.post("/", createGroup)
 groupRouter.get("/", getGroups)
+groupRouter.get("/user", getUserGroups) // Solo grupos donde es miembro
 groupRouter.get("/search", searchGroups) // Búsqueda por nombre
 groupRouter.get("/invite/:code", findGroupByInviteCode) // Búsqueda por código
 groupRouter.post("/invite/:code/join", requestJoinGroup) // Solicitar unirse

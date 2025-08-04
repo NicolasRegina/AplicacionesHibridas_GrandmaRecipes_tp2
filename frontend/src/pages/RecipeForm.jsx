@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { createRecipe } from "../api/recipes";
-import { getGroups } from "../api/groups";
+import { getUserGroups } from "../api/groups";
 
 const initialIngredient = { name: "", quantity: "", unit: "" };
 const initialStep = { number: 1, description: "" };
@@ -37,7 +37,7 @@ const RecipeForm = () => {
     const fetchGroups = async () => {
       try {
         setLoadingGroups(true);
-        const response = await getGroups(token);
+        const response = await getUserGroups(token);
         setGroups(response.data || response); // Dependiendo de la estructura de respuesta
       } catch (err) {
         console.error("Error al cargar grupos:", err);
@@ -162,7 +162,9 @@ const RecipeForm = () => {
       
       await createRecipe(recipeData, token);
       setSuccess("Receta creada exitosamente. Está pendiente de aprobación por un administrador antes de ser pública.");
-      setTimeout(() => navigate("/recipes"), 1200);
+      
+      // Navegar inmediatamente para mostrar la nueva receta
+      setTimeout(() => navigate("/recipes?refresh=true"), 1000);
     } catch (err) {
       setError(err.response?.data?.message || "Error al crear la receta");
     }

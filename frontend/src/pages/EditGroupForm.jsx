@@ -28,7 +28,7 @@ const EditGroupForm = () => {
           image: data.image || "",
           isPrivate: data.isPrivate ?? true,
         });
-      } catch (err) {
+      } catch {
         setError("No se pudo cargar el grupo.");
       }
       setLoading(false);
@@ -69,9 +69,9 @@ const EditGroupForm = () => {
     if (form.image.trim()) groupData.image = form.image.trim();
 
     try {
-      await updateGroup(id, groupData, token);
-      setSuccess("Grupo actualizado exitosamente");
-      setTimeout(() => navigate("/groups"), 1200);
+      const response = await updateGroup(id, groupData, token);
+      setSuccess(response.message || "Grupo actualizado exitosamente");
+      setTimeout(() => navigate("/groups"), 1500);
     } catch (err) {
       setError(err.response?.data?.message || "Error al actualizar el grupo");
     }

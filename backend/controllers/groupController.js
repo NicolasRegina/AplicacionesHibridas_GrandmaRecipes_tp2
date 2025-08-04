@@ -128,10 +128,6 @@ export const getGroups = async (req, res) => {
                 .select("name description image isPrivate creator members inviteCode createdAt moderationStatus")
         }
 
-        console.log("Grupos - Usuario role:", req.user.role);
-        console.log("Grupos - Usuario ID:", req.user.id);
-        console.log("Grupos encontrados:", groups.length);
-
         // Agregar información de membresía para cada grupo
         const groupsWithMembership = groups.map(group => {
             const member = group.members.find(m => m.user.toString() === req.user.id);
@@ -142,10 +138,35 @@ export const getGroups = async (req, res) => {
             };
         });
 
-        res.status(200).json(groupsWithMembership)
+        res.status(200).json(groupsWithMembership);
     } catch (err) {
-        console.error("Error en getGroups:", err);
-        res.status(500).json({ message: err.message })
+        res.status(500).json({ message: err.message });
+    }
+}
+
+// Obtener solo los grupos donde el usuario es miembro (para formularios)
+export const getUserGroups = async (req, res) => {
+    try {
+        const groups = await Group.find({
+            "members.user": req.user.id,
+            moderationStatus: "approved"
+        })
+            .populate("creator", "name profilePicture")
+            .select("name description image isPrivate creator members inviteCode")
+            .sort({ name: 1 });
+
+        // Agregar información de rol del usuario
+        const groupsWithRole = groups.map(group => {
+            const member = group.members.find(m => m.user.toString() === req.user.id);
+            return {
+                ...group.toObject(),
+                userRole: member ? member.role : null
+            };
+        });
+
+        res.status(200).json(groupsWithRole);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 }
 
@@ -212,20 +233,35 @@ export const updateGroup = async (req, res) => {
             return res.status(403).json({ message: "No tienes permiso para actualizar este grupo" })
         }
 
+        // Preparar datos de actualización
+        const updateData = {
+            name: req.body.name,
+            description: req.body.description,
+            image: req.body.image,
+            isPrivate: req.body.isPrivate,
+        }
+
+        // Si no es admin del sistema y está editando, resetear estado de moderación
+        if (req.user.role !== "admin") {
+            updateData.moderationStatus = "pending"
+            updateData.moderatedBy = null
+            updateData.moderatedAt = null
+            updateData.rejectionReason = null
+        }
+
         // Actualizar grupo
         const updatedGroup = await Group.findByIdAndUpdate(
             req.params.id,
-            {
-                name: req.body.name,
-                description: req.body.description,
-                image: req.body.image,
-                isPrivate: req.body.isPrivate,
-            },
+            updateData,
             { new: true },
-        )
+        ).populate("creator", "name")
+
+        const message = req.user.role === "admin" 
+            ? "Grupo actualizado exitosamente"
+            : "Grupo actualizado exitosamente. Está pendiente de aprobación nuevamente."
 
         res.status(200).json({
-            message: "Grupo actualizado exitosamente",
+            message,
             group: updatedGroup,
         })
     } catch (err) {
