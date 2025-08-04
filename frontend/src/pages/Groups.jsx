@@ -43,8 +43,14 @@ const Groups = () => {
   };
 
   // Separar grupos por membresía
-  const myGroups = groups.filter(group => group.isMember);
-  const publicGroups = groups.filter(group => !group.isMember && !group.isPrivate);
+  const myGroups = groups.filter(group => 
+    group.isMember || group.creator?._id === user?._id
+  );
+  const publicGroups = groups.filter(group => 
+    !group.isMember && 
+    !group.isPrivate && 
+    group.creator?._id !== user?._id
+  );
 
   return (
     <div className="container py-4">

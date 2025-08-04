@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
+import { useModerationCounts } from '../hooks/useModerationCounts'
 
 const ModerationRecipes = () => {
   const [pendingRecipes, setPendingRecipes] = useState([])
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState({})
+  const { refresh } = useModerationCounts()
 
   // Obtener recetas pendientes
   const fetchPendingRecipes = async () => {
@@ -46,6 +48,7 @@ const ModerationRecipes = () => {
       if (response.ok) {
         toast.success('Receta aprobada exitosamente')
         setPendingRecipes(prev => prev.filter(recipe => recipe._id !== recipeId))
+        refresh() // Actualizar contador en navbar
       } else {
         const error = await response.json()
         toast.error(error.message || 'Error al aprobar receta')
@@ -76,6 +79,7 @@ const ModerationRecipes = () => {
       if (response.ok) {
         toast.success('Receta rechazada')
         setPendingRecipes(prev => prev.filter(recipe => recipe._id !== recipeId))
+        refresh() // Actualizar contador en navbar
       } else {
         const error = await response.json()
         toast.error(error.message || 'Error al rechazar receta')

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
+import { useModerationCounts } from '../hooks/useModerationCounts'
 
 const ModerationGroups = () => {
   const [pendingGroups, setPendingGroups] = useState([])
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState({})
+  const { refresh } = useModerationCounts()
 
   // Obtener grupos pendientes
   const fetchPendingGroups = async () => {
@@ -46,6 +48,7 @@ const ModerationGroups = () => {
       if (response.ok) {
         toast.success('Grupo aprobado exitosamente')
         setPendingGroups(prev => prev.filter(group => group._id !== groupId))
+        refresh() // Actualizar contador en navbar
       } else {
         const error = await response.json()
         toast.error(error.message || 'Error al aprobar grupo')
@@ -76,6 +79,7 @@ const ModerationGroups = () => {
       if (response.ok) {
         toast.success('Grupo rechazado')
         setPendingGroups(prev => prev.filter(group => group._id !== groupId))
+        refresh() // Actualizar contador en navbar
       } else {
         const error = await response.json()
         toast.error(error.message || 'Error al rechazar grupo')

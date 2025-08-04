@@ -114,18 +114,23 @@ export const getGroups = async (req, res) => {
         if (req.user.role === "admin") {
             groups = await Group.find({})
                 .populate("creator", "name profilePicture")
-                .select("name description image isPrivate creator members inviteCode createdAt moderationStatus")
+                .select("name description image isPrivate creator members inviteCode createdAt moderationStatus rejectionReason")
         } else {
-            // Usuario normal: ve grupos aprobados donde es miembro + grupos públicos aprobados
+            // Usuario normal: ve grupos aprobados donde es miembro + grupos públicos aprobados + todos sus propios grupos
             groups = await Group.find({
-                moderationStatus: "approved", // Solo grupos aprobados
                 $or: [
-                    { "members.user": req.user.id }, // Grupos donde es miembro
-                    { isPrivate: false } // Grupos públicos
+                    { 
+                        moderationStatus: "approved",
+                        $or: [
+                            { "members.user": req.user.id }, // Grupos aprobados donde es miembro
+                            { isPrivate: false } // Grupos públicos aprobados
+                        ]
+                    },
+                    { creator: req.user.id } // Todos sus propios grupos (cualquier estado)
                 ]
             })
                 .populate("creator", "name profilePicture")
-                .select("name description image isPrivate creator members inviteCode createdAt moderationStatus")
+                .select("name description image isPrivate creator members inviteCode createdAt moderationStatus rejectionReason")
         }
 
         // Agregar información de membresía para cada grupo
@@ -226,10 +231,13 @@ export const updateGroup = async (req, res) => {
         const group = await Group.findById(req.params.id)
         if (!group) return res.status(404).json({ message: "Grupo no encontrado" })
 
-        // Verificar si el usuario es administrador del grupo o es un admin del sistema
+        // Verificar permisos: creador del grupo, administrador del grupo, o admin del sistema
+        const isCreator = group.creator.toString() === req.user.id
         const member = group.members.find((member) => member.user.toString() === req.user.id)
+        const isGroupAdmin = member && member.role === "admin"
+        const isSystemAdmin = req.user.role === "admin"
 
-        if ((!member || member.role !== "admin") && req.user.role !== "admin") {
+        if (!isCreator && !isGroupAdmin && !isSystemAdmin) {
             return res.status(403).json({ message: "No tienes permiso para actualizar este grupo" })
         }
 
