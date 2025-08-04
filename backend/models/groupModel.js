@@ -70,7 +70,7 @@ const groupSchema = new mongoose.Schema(
         moderationStatus: {
             type: String,
             enum: ["pending", "approved", "rejected"],
-            default: "pending",
+            default: "pending", // Los nuevos grupos van a moderación
         },
         moderatedBy: {
             type: mongoose.Schema.Types.ObjectId,

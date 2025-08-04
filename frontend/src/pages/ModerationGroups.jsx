@@ -134,12 +134,12 @@ const ModerationGroups = () => {
           ) : (
             <div className="row">
               {pendingGroups.map((group) => (
-                <div key={group._id} className="col-12 col-lg-6 mb-4">
+                <div key={group._id} className="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
                   <div className="card shadow-sm border-0 h-100">
                     {/* Header del grupo */}
-                    <div className="card-header bg-warning bg-opacity-25">
+                    <div className="card-header bg-warning bg-opacity-25 py-2">
                       <div className="d-flex justify-content-between align-items-center">
-                        <h6 className="mb-0 fw-bold">⏳ Pendiente de Revisión</h6>
+                        <h6 className="mb-0 fw-bold small">⏳ Pendiente</h6>
                         <small className="text-muted">
                           {new Date(group.createdAt).toLocaleDateString()}
                         </small>
@@ -147,7 +147,7 @@ const ModerationGroups = () => {
                     </div>
 
                     {/* Imagen del grupo */}
-                    <div className="card-img-top bg-light d-flex align-items-center justify-content-center" style={{ height: '200px' }}>
+                    <div className="card-img-top bg-light d-flex align-items-center justify-content-center" style={{ height: '120px' }}>
                       {group.image ? (
                         <img
                           src={group.image}
@@ -164,55 +164,58 @@ const ModerationGroups = () => {
                     </div>
 
                     {/* Información del grupo */}
-                    <div className="card-body d-flex flex-column">
-                      <h5 className="card-title text-success">{group.name}</h5>
+                    <div className="card-body d-flex flex-column p-3">
+                      <h6 className="card-title text-success mb-2">{group.name}</h6>
                       
-                      <p className="card-text text-muted mb-3">
-                        {group.description}
+                      <p className="card-text text-muted mb-2 small">
+                        {group.description.length > 80 
+                          ? `${group.description.substring(0, 80)}...` 
+                          : group.description
+                        }
                       </p>
 
-                      <div className="mb-3">
+                      <div className="mb-1">
                         <small className="text-muted">
-                          👤 <strong>Creador:</strong> {group.creator?.name || 'Desconocido'}
+                          👤 {group.creator?.name || 'Desconocido'}
                         </small>
                       </div>
 
-                      <div className="mb-3">
+                      <div className="mb-1">
                         <small className="text-muted">
-                          🔒 <strong>Tipo:</strong> {group.isPrivate ? 'Privado' : 'Público'}
+                          🔒 {group.isPrivate ? 'Privado' : 'Público'}
                         </small>
                       </div>
 
-                      <div className="mb-3">
+                      <div className="mb-2">
                         <small className="text-muted">
-                          🎫 <strong>Código:</strong> {group.inviteCode}
+                          🎫 <code>{group.inviteCode}</code>
                         </small>
                       </div>
 
                       {/* Botones de acción */}
                       <div className="mt-auto">
-                        <div className="d-grid gap-2">
+                        <div className="d-grid gap-1">
                           <button
-                            className="btn btn-success"
+                            className="btn btn-success btn-sm"
                             onClick={() => handleApprove(group._id)}
                             disabled={actionLoading[group._id]}
                           >
                             {actionLoading[group._id] ? (
                               <>
-                                <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                                <span className="spinner-border spinner-border-sm me-1" role="status"></span>
                                 Procesando...
                               </>
                             ) : (
-                              <>✅ Aprobar Grupo</>
+                              <>✅ Aprobar</>
                             )}
                           </button>
                           
                           <button
-                            className="btn btn-outline-danger"
+                            className="btn btn-outline-danger btn-sm"
                             onClick={() => handleRejectWithReason(group._id)}
                             disabled={actionLoading[group._id]}
                           >
-                            ❌ Rechazar Grupo
+                            ❌ Rechazar
                           </button>
                         </div>
                       </div>

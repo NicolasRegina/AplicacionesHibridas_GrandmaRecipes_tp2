@@ -109,7 +109,7 @@ const recipeSchema = new mongoose.Schema(
         moderationStatus: {
             type: String,
             enum: ["pending", "approved", "rejected"],
-            default: "pending",
+            default: "pending", // Las nuevas recetas van a moderación
         },
         moderatedBy: {
             type: mongoose.Schema.Types.ObjectId,

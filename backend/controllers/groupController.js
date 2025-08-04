@@ -74,12 +74,21 @@ export const createGroup = async (req, res) => {
         const inviteCode = await Group.generateInviteCode()
 
         // Crear nuevo grupo
-        const group = new Group({
+        const groupData = {
             ...req.body,
             creator: req.user.id,
             inviteCode,
             members: [{ user: req.user.id, role: "owner" }],
-        })
+        }
+
+        // Si es admin, auto-aprobar el grupo
+        if (req.user.role === "admin") {
+            groupData.moderationStatus = "approved"
+            groupData.moderatedBy = req.user.id
+            groupData.moderatedAt = new Date()
+        }
+
+        const group = new Group(groupData)
 
         // Guardar grupo
         const savedGroup = await group.save()
@@ -119,6 +128,10 @@ export const getGroups = async (req, res) => {
                 .select("name description image isPrivate creator members inviteCode createdAt moderationStatus")
         }
 
+        console.log("Grupos - Usuario role:", req.user.role);
+        console.log("Grupos - Usuario ID:", req.user.id);
+        console.log("Grupos encontrados:", groups.length);
+
         // Agregar información de membresía para cada grupo
         const groupsWithMembership = groups.map(group => {
             const member = group.members.find(m => m.user.toString() === req.user.id);
@@ -131,6 +144,7 @@ export const getGroups = async (req, res) => {
 
         res.status(200).json(groupsWithMembership)
     } catch (err) {
+        console.error("Error en getGroups:", err);
         res.status(500).json({ message: err.message })
     }
 }

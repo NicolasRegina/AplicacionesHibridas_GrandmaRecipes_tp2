@@ -130,10 +130,19 @@ export const createRecipe = async (req, res) => {
         if (error) return res.status(400).json({ message: error.details[0].message })
 
         // Crear nueva receta
-        const recipe = new Recipe({
+        const recipeData = {
             ...req.body,
             author: req.user.id,
-        })
+        }
+
+        // Si es admin, auto-aprobar la receta
+        if (req.user.role === "admin") {
+            recipeData.moderationStatus = "approved"
+            recipeData.moderatedBy = req.user.id
+            recipeData.moderatedAt = new Date()
+        }
+
+        const recipe = new Recipe(recipeData)
 
         // Guardar receta
         const savedRecipe = await recipe.save()

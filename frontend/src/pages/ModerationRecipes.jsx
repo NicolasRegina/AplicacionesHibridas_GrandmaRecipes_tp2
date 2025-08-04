@@ -134,12 +134,12 @@ const ModerationRecipes = () => {
           ) : (
             <div className="row">
               {pendingRecipes.map((recipe) => (
-                <div key={recipe._id} className="col-12 col-lg-6 mb-4">
+                <div key={recipe._id} className="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
                   <div className="card shadow-sm border-0 h-100">
                     {/* Header de la receta */}
-                    <div className="card-header bg-warning bg-opacity-25">
+                    <div className="card-header bg-warning bg-opacity-25 py-2">
                       <div className="d-flex justify-content-between align-items-center">
-                        <h6 className="mb-0 fw-bold">⏳ Pendiente de Revisión</h6>
+                        <h6 className="mb-0 fw-bold small">⏳ Pendiente</h6>
                         <small className="text-muted">
                           {new Date(recipe.createdAt).toLocaleDateString()}
                         </small>
@@ -147,7 +147,7 @@ const ModerationRecipes = () => {
                     </div>
 
                     {/* Imagen de la receta */}
-                    <div className="card-img-top bg-light d-flex align-items-center justify-content-center" style={{ height: '200px' }}>
+                    <div className="card-img-top bg-light d-flex align-items-center justify-content-center" style={{ height: '120px' }}>
                       {recipe.image ? (
                         <img
                           src={recipe.image}
@@ -164,84 +164,72 @@ const ModerationRecipes = () => {
                     </div>
 
                     {/* Información de la receta */}
-                    <div className="card-body d-flex flex-column">
-                      <h5 className="card-title text-success">{recipe.title}</h5>
+                    <div className="card-body d-flex flex-column p-3">
+                      <h6 className="card-title text-success mb-2">{recipe.title}</h6>
                       
-                      <p className="card-text text-muted mb-3">
-                        {recipe.description.length > 150 
-                          ? `${recipe.description.substring(0, 150)}...` 
+                      <p className="card-text text-muted mb-2 small">
+                        {recipe.description.length > 80 
+                          ? `${recipe.description.substring(0, 80)}...` 
                           : recipe.description
                         }
                       </p>
 
-                      <div className="mb-2">
+                      <div className="mb-1">
                         <small className="text-muted">
-                          👤 <strong>Autor:</strong> {recipe.author?.name || 'Desconocido'}
+                          👤 {recipe.author?.name || 'Desconocido'}
+                        </small>
+                      </div>
+
+                      <div className="mb-1">
+                        <small className="text-muted">
+                          📂 {recipe.category} | ⚡ {recipe.difficulty}
                         </small>
                       </div>
 
                       <div className="mb-2">
                         <small className="text-muted">
-                          📂 <strong>Categoría:</strong> {recipe.category}
-                        </small>
-                      </div>
-
-                      <div className="mb-2">
-                        <small className="text-muted">
-                          ⚡ <strong>Dificultad:</strong> {recipe.difficulty}
-                        </small>
-                      </div>
-
-                      <div className="mb-2">
-                        <small className="text-muted">
-                          ⏱️ <strong>Tiempo:</strong> {recipe.prepTime + recipe.cookTime} min
-                        </small>
-                      </div>
-
-                      <div className="mb-2">
-                        <small className="text-muted">
-                          🍽️ <strong>Porciones:</strong> {recipe.servings}
+                          ⏱️ {recipe.prepTime + recipe.cookTime}min | 🍽️ {recipe.servings}p
                         </small>
                       </div>
 
                       {recipe.group && (
                         <div className="mb-2">
                           <small className="text-muted">
-                            👥 <strong>Grupo:</strong> {recipe.group.name}
+                            👥 {recipe.group.name}
                           </small>
                         </div>
                       )}
 
-                      <div className="mb-3">
+                      <div className="mb-2">
                         <small className="text-muted">
-                          🔒 <strong>Tipo:</strong> {recipe.isPrivate ? 'Privada' : 'Pública'}
+                          🔒 {recipe.isPrivate ? 'Privada' : 'Pública'}
                         </small>
                       </div>
 
                       {/* Botones de acción */}
                       <div className="mt-auto">
-                        <div className="d-grid gap-2">
+                        <div className="d-grid gap-1">
                           <button
-                            className="btn btn-success"
+                            className="btn btn-success btn-sm"
                             onClick={() => handleApprove(recipe._id)}
                             disabled={actionLoading[recipe._id]}
                           >
                             {actionLoading[recipe._id] ? (
                               <>
-                                <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                                <span className="spinner-border spinner-border-sm me-1" role="status"></span>
                                 Procesando...
                               </>
                             ) : (
-                              <>✅ Aprobar Receta</>
+                              <>✅ Aprobar</>
                             )}
                           </button>
                           
                           <button
-                            className="btn btn-outline-danger"
+                            className="btn btn-outline-danger btn-sm"
                             onClick={() => handleRejectWithReason(recipe._id)}
                             disabled={actionLoading[recipe._id]}
                           >
-                            ❌ Rechazar Receta
+                            ❌ Rechazar
                           </button>
                         </div>
                       </div>
